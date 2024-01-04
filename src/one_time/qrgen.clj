@@ -13,14 +13,14 @@
 
 (defn totp-stream
   "Returns a java.io.ByteArrayOutputStream with the totp qrcode"
-  [{:keys [image-type image-size label user secret]
+  [{:keys [image-type image-size label user secret query-extras]
     :or   {image-type :JPG image-size 3}}]
   {:pre [(not-any? nil? [label user secret])
          (image-types image-type)]}
   (let [baos (ByteArrayOutputStream.)]
-    (-> (^String uri/totp-uri {:label  label
+    (-> (^String uri/totp-uri (merge {:label  label
                                :secret secret
-                               :user   user})
+                               :user   user} query-extras) )
         (QrCode/encodeText QrCode$Ecc/HIGH)
         (.toImage image-size 0)
         (ImageIO/write ^String (image-types image-type) baos))
@@ -28,14 +28,14 @@
 
 (defn totp-file
   "Returns a java.io.File with the totp qrcode"
-  [{:keys [image-type image-size label user secret]
+  [{:keys [image-type image-size label user secret query-extras]
     :or   {image-type :JPG image-size 3}}]
   {:pre [(not-any? nil? [label user secret])
          (image-types image-type)]}
   (let [f (java.io.File/createTempFile "qrgen" (str "." (image-types image-type)))]
-    (-> (^String uri/totp-uri {:label  label
+    (-> (^String uri/totp-uri (merge {:label  label
                                :secret secret
-                               :user   user})
+                               :user   user} query-extras))
         (QrCode/encodeText QrCode$Ecc/HIGH)
         (.toImage image-size 0)
         (ImageIO/write ^String (image-types image-type) f))
@@ -43,15 +43,15 @@
 
 (defn hotp-stream
   "Returns a java.io.ByteArrayOutputStream with the hotp qrcode"
-  [{:keys [image-type image-size label user secret counter]
+  [{:keys [image-type image-size label user secret counter query-extras]
     :or   {image-type :JPG image-size 3}}]
   {:pre [(not-any? nil? [label user secret counter])
          (image-types image-type)]}
   (let [baos (ByteArrayOutputStream.)]
-    (-> (^String uri/hotp-uri {:label   label
+    (-> (^String uri/hotp-uri (merge {:label   label
                                :secret  secret
                                :user    user
-                               :counter counter})
+                               :counter counter} query-extras))
         (QrCode/encodeText QrCode$Ecc/HIGH)
         (.toImage image-size 0)
         (ImageIO/write ^String (image-types image-type) baos))
@@ -59,15 +59,15 @@
 
 (defn hotp-file
   "Returns a java.io.File with the hotp qrcode"
-  [{:keys [image-type image-size label user secret counter]
+  [{:keys [image-type image-size label user secret counter query-extras]
     :or   {image-type :JPG image-size 3}}]
   {:pre [(not-any? nil? [label user secret counter])
          (image-types image-type)]}
   (let [f (java.io.File/createTempFile "qrgen" (str "." (image-types image-type)))]
-    (-> (^String uri/hotp-uri {:label   label
+    (-> (^String uri/hotp-uri (merge {:label   label
                                :secret  secret
                                :user    user
-                               :counter counter})
+                               :counter counter} query-extras))
         (QrCode/encodeText QrCode$Ecc/HIGH)
         (.toImage image-size 0)
         (ImageIO/write ^String (image-types image-type) f))

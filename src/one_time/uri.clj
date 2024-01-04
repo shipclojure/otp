@@ -24,9 +24,10 @@
    ;; LABEL  : Company.com
    ;; USER   : user@email.com
    ;; SECRET : secret key "
-  [{:keys [type label user secret counter], :or {counter nil} :as all}]
+  [{:keys [type label user secret counter], :or {counter nil} :as params}]
   (let [params {:secret secret :issuer label :counter counter}
-        clean-params (into {} (filter (comp some? val) params))
+        clean-params (dissoc (into {} (filter (comp some? val) params))
+                             :type :label :user) 
         base (format "otpauth://%s/%s:%s" type (url-encode label) (url-encode user))
         url (build-url base clean-params)]
     url))
